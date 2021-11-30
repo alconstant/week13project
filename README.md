@@ -144,19 +144,24 @@ We have installed the following Beats on these machines:
 - Filebeat and Metricbeat
 
 These Beats allow us to collect the following information from each machine:
-- _TODO: In 1-2 sentences, explain what kind of data each beat collects, and provide 1 example of what you expect to see. E.g., `Winlogbeat` collects Windows logs, which we use to track user logon events, etc._
+- Filebeat collects data about the file system such as the authorization system being stopped is logged using filebeat. Metricbeat collects operating system metrics such as CPU usage. 
 
 ### Using the Playbook
 In order to use the playbook, you will need to have an Ansible control node already configured. Assuming you have such a control node provisioned: 
 
 SSH into the control node and follow the steps below:
-- Copy the playbook file to /etc/ansible
-- Update the hosts file to include the webservers IP addresses and hosts in playbook file is webservers.
-- Run the playbook, and navigate to http://13.66.200.56:5601/app/kibana to check that the installation worked as expected.
-
-_TODO: Answer the following questions to fill in the blanks:_
-- _Which file is the playbook? Where do you copy it?_
-- _Which file do you update to make Ansible run the playbook on a specific machine? How do I specify which machine to install the ELK server on versus which to install Filebeat on?_
-- _Which URL do you navigate to in order to check that the ELK server is running?
+- Copy the playbook file to /etc/ansible/files
+- Update the hosts file to include the webservers IP addresses and update the playbook file so that hosts is webservers. The IP addresses for the webservers and elkservers are different. Filebeat and metricbeat are being installed on the webservers while the elk docker container has a different IP address which is also edited in the hosts file.
+- Run the playbook, and navigate to http://13.66.200.56:5601/app/kibana#/home?_g=() to check that the installation worked as expected.
 
 _As a **Bonus**, provide the specific commands the user will need to run to download the playbook, update the files, etc._
+
+- To download the filebeat playbook `curl https://gist.githubusercontent.com/slape/5cc350109583af6cbe577bbcc0710c93/raw/eca603b72586fbe148c11f9c87bf96a63cb25760/Filebeat > /etc/ansible/files/filebeat-config.yml`
+- Change hosts to webservers
+- Download the filebeat deb from kibana using the curl command
+- Install filebeat using `dpkg -i`
+- To enable and configure the module use the command `filebeat modiles enable system`
+- To setup filebeat use the command `filebeat setup`
+- To start filebeat use the command `service filebeat start`
+- To enable on boot use systemd with the name: filebeat and enabled: yes
+- Once the filebeat playbook file is created and saved, run it with the command `ansible-playbook <filename.yml>`
