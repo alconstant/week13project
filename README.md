@@ -6,7 +6,66 @@ The files in this repository were used to configure the network depicted below.
 
 These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the YAML file may be used to install only certain pieces of it, such as Filebeat.
 
-  - _TODO: Enter the playbook file._
+```
+---
+- name: Configure Elk VM with Docker
+  hosts: elkservers
+  remote_user: azadmin
+  become: true
+  tasks:
+    # Use apt module
+    - name: Install docker.io
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+        name: docker.io
+        state: present
+
+      # Use apt module
+    - name: Install python3-pip
+      apt:
+        force_apt_get: yes
+        name: python3-pip
+        state: present
+
+      # Use pip module (It will default to pip3)
+    - name: Install Docker module
+      pip:
+        name: docker
+        state: present
+
+      # Use command module
+    - name: Increase virtual memory
+      command: sysctl -w vm.max_map_count=262144
+
+      # Use sysctl module
+    - name: Use more memory
+      sysctl:
+        name: vm.max_map_count
+        value: "262144"
+        state: present
+        reload: yes
+
+      # Use docker_container module
+    - name: download and launch a docker elk container
+      docker_container:
+        name: elk
+        image: sebp/elk:761
+        state: started
+        restart_policy: always
+
+        # Please list the ports that ELK runs on
+        published_ports:
+          -  5601:5601
+          -  9200:9200
+          -  5044:5044
+
+      # Use systemd module
+    - name: Enable service docker on boot
+      systemd:
+        name: docker
+        enabled: yes
+  ```
 
 This document contains the following details:
 - Description of the Topology
@@ -60,9 +119,13 @@ Ansible was used to automate configuration of the ELK machine. No configuration 
 - thousands of machines can be setup with a smaller chance of human error and more efficiently without expending too many rescources.
 
 The playbook implements the following tasks:
-- _TODO: In 3-5 bullets, explain the steps of the ELK installation play. E.g., install Docker; download image; etc._
-- ...
-- ...
+- Install docker.io, including update cache and force apt get
+- Install python3-pip
+- Install docker with pip module
+- Increase the virtual memory by increasing the vm.max_map_count=262144
+- Download and launch the docker elk container with the restart policy set to always and download sebp/elk:761 image
+- Include the ports for ELK to run on
+- Finally, enable docker to start on boot
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
 
